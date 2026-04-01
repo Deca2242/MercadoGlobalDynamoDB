@@ -7,12 +7,13 @@ import {
   OrderDetail,
   CreateOrderInput,
 } from "../../domain/ports/OrderRepositoryPort";
+import { OrderServicePort } from "../ports/OrderServicePort";
 import {
   CreateOrderInputSchema,
   UpdateStatusSchema,
 } from "../validators/OrderValidator";
 
-export class OrderService {
+export class OrderService implements OrderServicePort {
   constructor(private readonly orderRepo: OrderRepositoryPort) {}
 
   async getHeader(orderId: string): Promise<Order> {
@@ -50,13 +51,9 @@ export class OrderService {
     await this.orderRepo.createOrder(input);
   }
 
-  async updateStatus(
-    orderId: string,
-    userId: string,
-    newStatus: string,
-  ): Promise<void> {
-    await this.getHeader(orderId);
+  async updateStatus(orderId: string, newStatus: string): Promise<void> {
+    const order = await this.getHeader(orderId);
     const { newStatus: status } = validate(UpdateStatusSchema, { newStatus });
-    await this.orderRepo.updateStatus(orderId, userId, status);
+    await this.orderRepo.updateStatus(order, status);
   }
 }

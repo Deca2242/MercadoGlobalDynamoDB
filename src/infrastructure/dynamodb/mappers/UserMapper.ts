@@ -1,17 +1,16 @@
 import { User } from "../../../domain/entities/User";
 import { Address } from "../../../domain/entities/Address";
 import { Payment } from "../../../domain/entities/Payment";
-import { Order } from "../../../domain/entities/Order";
 
-type DynamoItem = Record<string, any>;
+type DynamoItem = Record<string, unknown>;
 
 export class UserMapper {
   static profileToDomain(item: DynamoItem): User {
     const userId = (item.PK as string).replace("USER#", "");
     return {
       userId,
-      name: item.name,
-      email: item.email,
+      name: item.name as string,
+      email: item.email as string,
     };
   }
 
@@ -21,8 +20,8 @@ export class UserMapper {
     return {
       addressId,
       userId,
-      street: item.street,
-      city: item.city,
+      street: item.street as string,
+      city: item.city as string,
     };
   }
 
@@ -32,20 +31,8 @@ export class UserMapper {
     return {
       paymentId,
       userId,
-      type: item.type,
-      last4: item.last4,
-    };
-  }
-
-  static orderRefToDomain(item: DynamoItem): Order {
-    const userId = (item.PK as string).replace("USER#", "");
-    return {
-      orderId: item.orderId,
-      userId,
-      status: item.status,
-      total: Number(item.total),
-      date: item.GSI1SK || "",
-      shippingAddress: item.shippingAddress || "",
+      type: item.type as string,
+      last4: item.last4 as string | undefined,
     };
   }
 
@@ -73,20 +60,6 @@ export class UserMapper {
       SK: `PAYMENT#${payment.paymentId}`,
       type: payment.type,
       ...(payment.last4 && { last4: payment.last4 }),
-    };
-  }
-
-  static orderRefToDynamo(order: Order): DynamoItem {
-    const datePrefix = order.date.substring(0, 19) + "Z";
-    return {
-      PK: `USER#${order.userId}`,
-      SK: `ORDER#${datePrefix}#${order.orderId}`,
-      orderId: order.orderId,
-      status: order.status,
-      total: order.total,
-      shippingAddress: order.shippingAddress,
-      GSI1PK: `USER#${order.userId}#STATUS#${order.status}`,
-      GSI1SK: datePrefix,
     };
   }
 }

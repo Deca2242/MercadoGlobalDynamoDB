@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { UserService } from "../../../application/services/UserService";
+import { UserServicePort } from "../../../application/ports/UserServicePort";
 
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserServicePort) {}
 
   getProfile = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.params as { userId: string };

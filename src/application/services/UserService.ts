@@ -8,6 +8,7 @@ import {
 } from "../../domain/ports/UserRepositoryPort";
 import { NotFoundError, BadRequestError } from "../../shared/AppError";
 import { validate } from "../../shared/validation";
+import { UserServicePort } from "../ports/UserServicePort";
 import {
   CreateProfileSchema,
   AddAddressSchema,
@@ -15,7 +16,7 @@ import {
   FilterOrdersSchema,
 } from "../validators/UserValidator";
 
-export class UserService {
+export class UserService implements UserServicePort {
   constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async getProfile(userId: string): Promise<User> {

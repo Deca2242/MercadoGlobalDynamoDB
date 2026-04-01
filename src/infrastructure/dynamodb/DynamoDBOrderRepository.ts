@@ -12,7 +12,6 @@ import {
 import { Order } from "../../domain/entities/Order";
 import { OrderItem } from "../../domain/entities/OrderItem";
 import { OrderMapper } from "./mappers/OrderMapper";
-import { UserMapper } from "./mappers/UserMapper";
 
 export class DynamoDBOrderRepository implements OrderRepositoryPort {
   constructor(
@@ -87,7 +86,7 @@ export class DynamoDBOrderRepository implements OrderRepositoryPort {
           {
             Put: {
               TableName: this.tableName,
-              Item: UserMapper.orderRefToDynamo(order),
+              Item: OrderMapper.orderRefToDynamo(order),
             },
           },
           ...items.map((item) => ({
@@ -101,16 +100,9 @@ export class DynamoDBOrderRepository implements OrderRepositoryPort {
     );
   }
 
-  async updateStatus(
-    orderId: string,
-    userId: string,
-    newStatus: string,
-  ): Promise<void> {
-    const current = await this.getHeader(orderId);
-    if (!current) return;
-
-    const datePrefix = current.date.substring(0, 19) + "Z";
-    const orderRefSK = `ORDER#${datePrefix}#${orderId}`;
+  async updateStatus(order: Order, newStatus: string): Promise<void> {
+    const datePrefix = order.date.substring(0, 19) + "Z";
+    const orderRefSK = `ORDER#${datePrefix}#${order.orderId}`;
 
     await this.docClient.send(
       new TransactWriteCommand({
@@ -118,7 +110,7 @@ export class DynamoDBOrderRepository implements OrderRepositoryPort {
           {
             Update: {
               TableName: this.tableName,
-              Key: { PK: `ORDER#${orderId}`, SK: "#METADATA" },
+              Key: { PK: `ORDER#${order.orderId}`, SK: "#METADATA" },
               UpdateExpression: "SET #s = :newStatus",
               ExpressionAttributeNames: { "#s": "status" },
               ExpressionAttributeValues: { ":newStatus": newStatus },
@@ -127,12 +119,12 @@ export class DynamoDBOrderRepository implements OrderRepositoryPort {
           {
             Update: {
               TableName: this.tableName,
-              Key: { PK: `USER#${userId}`, SK: orderRefSK },
+              Key: { PK: `USER#${order.userId}`, SK: orderRefSK },
               UpdateExpression: "SET #s = :newStatus, GSI1PK = :gsi1pk",
               ExpressionAttributeNames: { "#s": "status" },
               ExpressionAttributeValues: {
                 ":newStatus": newStatus,
-                ":gsi1pk": `USER#${userId}#STATUS#${newStatus}`,
+                ":gsi1pk": `USER#${order.userId}#STATUS#${newStatus}`,
               },
             },
           },

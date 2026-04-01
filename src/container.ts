@@ -12,8 +12,8 @@ const docClient = createDynamoDBDocClient();
 const userRepo = new DynamoDBUserRepository(docClient, environment.tableName);
 const orderRepo = new DynamoDBOrderRepository(docClient, environment.tableName);
 
-export const userService = new UserService(userRepo);
-export const orderService = new OrderService(orderRepo);
+const userService = new UserService(userRepo);
+const orderService = new OrderService(orderRepo);
 
 export const userController = new UserController(userService);
 export const orderController = new OrderController(orderService);

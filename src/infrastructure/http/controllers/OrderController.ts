@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { OrderService } from "../../../application/services/OrderService";
+import { OrderServicePort } from "../../../application/ports/OrderServicePort";
 
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(private readonly orderService: OrderServicePort) {}
 
   getHeader = async (req: Request, res: Response): Promise<void> => {
     const { orderId } = req.params as { orderId: string };
@@ -30,8 +30,8 @@ export class OrderController {
 
   updateStatus = async (req: Request, res: Response): Promise<void> => {
     const { orderId } = req.params as { orderId: string };
-    const { userId, newStatus } = req.body;
-    await this.orderService.updateStatus(orderId, userId, newStatus);
+    const { newStatus } = req.body;
+    await this.orderService.updateStatus(orderId, newStatus);
     res.json({ message: "Status updated" });
   };
 }

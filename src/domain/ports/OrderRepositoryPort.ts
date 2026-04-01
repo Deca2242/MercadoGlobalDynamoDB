@@ -18,9 +18,5 @@ export interface OrderRepositoryPort {
 
   createOrder(input: CreateOrderInput): Promise<void>;
 
-  updateStatus(
-    orderId: string,
-    userId: string,
-    newStatus: string,
-  ): Promise<void>;
+  updateStatus(order: Order, newStatus: string): Promise<void>;
 }

@@ -7,8 +7,8 @@ export function createDynamoDBDocClient(): DynamoDBDocumentClient {
     endpoint: environment.dynamodb.endpoint,
     region: environment.dynamodb.region,
     credentials: {
-      accessKeyId: "fakeMyKeyId",
-      secretAccessKey: "fakeSecretAccessKey",
+      accessKeyId: environment.dynamodb.accessKeyId,
+      secretAccessKey: environment.dynamodb.secretAccessKey,
     },
   });
 

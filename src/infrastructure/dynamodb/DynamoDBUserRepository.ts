@@ -14,6 +14,7 @@ import { Address } from "../../domain/entities/Address";
 import { Payment } from "../../domain/entities/Payment";
 import { Order } from "../../domain/entities/Order";
 import { UserMapper } from "./mappers/UserMapper";
+import { OrderMapper } from "./mappers/OrderMapper";
 
 export class DynamoDBUserRepository implements UserRepositoryPort {
   constructor(
@@ -116,7 +117,7 @@ export class DynamoDBUserRepository implements UserRepositoryPort {
         ScanIndexForward: false,
       }),
     );
-    return Items.map(UserMapper.orderRefToDomain);
+    return Items.map(OrderMapper.orderRefToDomain);
   }
 
   async filterOrdersByStatus(
@@ -134,7 +135,7 @@ export class DynamoDBUserRepository implements UserRepositoryPort {
         ScanIndexForward: false,
       }),
     );
-    return Items.map(UserMapper.orderRefToDomain);
+    return Items.map(OrderMapper.orderRefToDomain);
   }
 
   async getDashboard(userId: string): Promise<UserDashboard | null> {
@@ -162,7 +163,7 @@ export class DynamoDBUserRepository implements UserRepositoryPort {
       } else if (sk.startsWith("PAYMENT#")) {
         payments.push(UserMapper.paymentToDomain(item));
       } else if (sk.startsWith("ORDER#")) {
-        orders.push(UserMapper.orderRefToDomain(item));
+        orders.push(OrderMapper.orderRefToDomain(item));
       }
     }
 
