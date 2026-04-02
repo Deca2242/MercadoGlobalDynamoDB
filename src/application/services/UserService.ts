@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { User } from "../../domain/entities/User";
 import { Address } from "../../domain/entities/Address";
 import { Payment } from "../../domain/entities/Payment";
@@ -26,18 +27,15 @@ export class UserService implements UserServicePort {
   }
 
   async createProfile(
-    userId: string,
     name: string,
     email: string,
-  ): Promise<void> {
-    validate(CreateProfileSchema, { userId, name, email });
+  ): Promise<string> {
+    validate(CreateProfileSchema, { name, email });
 
-    const existing = await this.userRepo.findProfile(userId);
-    if (existing) {
-      throw new BadRequestError(`User '${userId}' already exists`);
-    }
-
+    const userId = uuidv4();
+    
     await this.userRepo.createProfile({ userId, name, email });
+    return userId;
   }
 
   async listAddresses(userId: string): Promise<Address[]> {

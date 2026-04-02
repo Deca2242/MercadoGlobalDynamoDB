@@ -2,7 +2,6 @@ import { z } from "zod";
 import { OrderStatusEnum } from "./OrderValidator";
 
 export const CreateProfileSchema = z.object({
-  userId: z.string().min(1, "userId is required"),
   name: z.string().min(1, "name is required"),
   email: z.string().email("email must be a valid email"),
 });

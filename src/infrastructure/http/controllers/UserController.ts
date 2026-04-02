@@ -11,9 +11,11 @@ export class UserController {
   };
 
   createProfile = async (req: Request, res: Response): Promise<void> => {
-    const { userId, name, email } = req.body;
-    await this.userService.createProfile(userId, name, email);
-    res.status(201).json({ message: "Profile created" });
+    const { name, email } = req.body;
+
+    const userId = await this.userService.createProfile(name, email);
+
+    res.status(201).json({ message: "Profile created", userId });
   };
 
   listAddresses = async (req: Request, res: Response): Promise<void> => {
@@ -65,7 +67,10 @@ export class UserController {
     const status = req.query.status as string | undefined;
 
     if (status) {
-      const orders = await this.userService.filterOrdersByStatus(userId, status);
+      const orders = await this.userService.filterOrdersByStatus(
+        userId,
+        status,
+      );
       res.json(orders);
       return;
     }
