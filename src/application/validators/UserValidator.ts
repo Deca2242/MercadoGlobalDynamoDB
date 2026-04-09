@@ -16,7 +16,6 @@ export const AddAddressSchema = z.object({
 export const PAYMENT_TYPES = ["credit", "debit", "paypal", "cash"] as const;
 
 export const AddPaymentSchema = z.object({
-  paymentId: z.string().min(1, "paymentId is required"),
   userId: z.string().min(1, "userId is required"),
   type: z.enum(PAYMENT_TYPES, {
     message: "type must be credit, debit, paypal or cash",

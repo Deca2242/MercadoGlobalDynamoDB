@@ -20,7 +20,6 @@ export interface UserServicePort {
   listPayments(userId: string): Promise<Payment[]>;
   addPayment(
     userId: string,
-    paymentId: string,
     type: string,
     last4?: string,
   ): Promise<void>;
