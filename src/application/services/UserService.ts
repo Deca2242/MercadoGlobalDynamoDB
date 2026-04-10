@@ -62,11 +62,11 @@ export class UserService implements UserServicePort {
 
   async addPayment(
     userId: string,
-    paymentId: string,
     type: string,
     last4?: string,
   ): Promise<void> {
-    validate(AddPaymentSchema, { paymentId, userId, type, last4 });
+    validate(AddPaymentSchema, { userId, type, last4 });
+    const paymentId = uuidv4();
     await this.userRepo.addPayment({ paymentId, userId, type, last4 });
   }
 

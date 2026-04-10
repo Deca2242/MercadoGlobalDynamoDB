@@ -48,8 +48,8 @@ export class UserController {
 
   addPayment = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.params as { userId: string };
-    const { paymentId, type, last4 } = req.body;
-    await this.userService.addPayment(userId, paymentId, type, last4);
+    const { type, last4 } = req.body;
+    await this.userService.addPayment(userId, type, last4);
     res.status(201).json({ message: "Payment added" });
   };
 
