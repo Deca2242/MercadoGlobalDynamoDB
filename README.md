@@ -1,4 +1,11 @@
-# MercadoGlobal API 🛒
+# MercadoGlobal API 
+
+#### Grupo 3 - integrantes 
+
+- Cristian Peña
+- Victor Navarro
+- Diego Castro
+- Cristian Barrera
 
 MercadoGlobal es una API RESTful construida con **Node.js, TypeScript y Express**, diseñada utilizando los principios de la **Arquitectura Hexagonal (Ports & Adapters)**. Utiliza **Amazon DynamoDB** como base de datos principal implementando el patrón de diseño de tabla única (Single Table Design).
 
