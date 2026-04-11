@@ -25,7 +25,14 @@ export const orderPaths = {
           content: {
             "application/json": {
               schema: {
-                $ref: "#/components/schemas/OrderDetail",
+                type: "object",
+                properties: {
+                  message: {
+                    type: "string",
+                    example: "Order created",
+                  },
+                },
+                required: ["message"],
               },
             },
           },
@@ -224,13 +231,12 @@ export const orderPaths = {
               schema: {
                 type: "object",
                 properties: {
-                  orderId: {
+                  message: {
                     type: "string",
-                  },
-                  newStatus: {
-                    type: "string",
+                    example: "Status updated",
                   },
                 },
+                required: ["message"],
               },
             },
           },

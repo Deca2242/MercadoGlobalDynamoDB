@@ -25,7 +25,19 @@ export const userPaths = {
           content: {
             "application/json": {
               schema: {
-                $ref: "#/components/schemas/User",
+                type: "object",
+                properties: {
+                  message: {
+                    type: "string",
+                    example: "Profile created",
+                  },
+                  userId: {
+                    type: "string",
+                    description: "ID único generado para el usuario",
+                    example: "550e8400-e29b-41d4-a716-446655440000",
+                  },
+                },
+                required: ["message", "userId"],
               },
             },
           },
@@ -209,7 +221,14 @@ export const userPaths = {
           content: {
             "application/json": {
               schema: {
-                $ref: "#/components/schemas/Address",
+                type: "object",
+                properties: {
+                  message: {
+                    type: "string",
+                    example: "Address added",
+                  },
+                },
+                required: ["message"],
               },
             },
           },
@@ -364,7 +383,14 @@ export const userPaths = {
           content: {
             "application/json": {
               schema: {
-                $ref: "#/components/schemas/PaymentMethod",
+                type: "object",
+                properties: {
+                  message: {
+                    type: "string",
+                    example: "Payment added",
+                  },
+                },
+                required: ["message"],
               },
             },
           },

@@ -5,59 +5,34 @@
 export const ErrorSchema = {
   type: "object",
   properties: {
-    statusCode: {
-      type: "integer",
-      description: "Código HTTP de error",
-      example: 400,
-    },
-    message: {
+    error: {
       type: "string",
       description: "Mensaje descriptivo del error",
       example: "Datos de entrada inválidos",
     },
-    code: {
-      type: "string",
-      description: "Código de error interno de la aplicación",
-      example: "VALIDATION_ERROR",
-    },
   },
-  required: ["statusCode", "message", "code"],
+  required: ["error"],
 } as const;
 
 export const NotFoundErrorSchema = {
   type: "object",
   properties: {
-    statusCode: {
-      type: "integer",
-      example: 404,
-    },
-    message: {
+    error: {
       type: "string",
-      example: "Usuario no encontrado",
-    },
-    code: {
-      type: "string",
-      example: "NOT_FOUND",
+      example: "User 'abc' not found",
     },
   },
-  required: ["statusCode", "message", "code"],
+  required: ["error"],
 } as const;
 
 export const ConflictErrorSchema = {
   type: "object",
   properties: {
-    statusCode: {
-      type: "integer",
-      example: 409,
-    },
-    message: {
+    error: {
       type: "string",
-      example: "El recurso ya existe",
-    },
-    code: {
-      type: "string",
-      example: "CONFLICT",
+      example: "Resource conflict",
     },
   },
-  required: ["statusCode", "message", "code"],
+  required: ["error"],
 } as const;
+
