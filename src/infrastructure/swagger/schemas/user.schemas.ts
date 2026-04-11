@@ -147,7 +147,7 @@ export const AddPaymentRequestSchema = {
 export const UserDashboardSchema = {
   type: "object",
   properties: {
-    user: {
+    profile: {
       $ref: "#/components/schemas/User",
     },
     addresses: {
@@ -156,7 +156,7 @@ export const UserDashboardSchema = {
         $ref: "#/components/schemas/Address",
       },
     },
-    paymentMethods: {
+    payments: {
       type: "array",
       items: {
         $ref: "#/components/schemas/PaymentMethod",
@@ -169,5 +169,6 @@ export const UserDashboardSchema = {
       },
     },
   },
-  required: ["user", "addresses", "paymentMethods", "orders"],
+  required: ["profile", "addresses", "payments", "orders"],
 } as const;
+

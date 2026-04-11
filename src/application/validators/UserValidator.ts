@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { OrderStatusEnum } from "./OrderValidator";
+import { OrderStatusEnum } from "../../shared/orderStatus";
 
 export const CreateProfileSchema = z.object({
   name: z.string().min(1, "name is required"),
