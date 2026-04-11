@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { OrderServicePort } from "../../../application/ports/OrderServicePort";
+import { OrderService } from "../../../application/services/OrderService";
 
 export class OrderController {
-  constructor(private readonly orderService: OrderServicePort) {}
+  constructor(private readonly orderService: OrderService) {}
 
   getHeader = async (req: Request, res: Response): Promise<void> => {
     const { orderId } = req.params as { orderId: string };

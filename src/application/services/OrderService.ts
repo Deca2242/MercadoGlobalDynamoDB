@@ -7,13 +7,12 @@ import {
   OrderDetail,
   CreateOrderInput,
 } from "../../domain/ports/OrderRepositoryPort";
-import { OrderServicePort } from "../ports/OrderServicePort";
 import {
   CreateOrderInputSchema,
   UpdateStatusSchema,
 } from "../validators/OrderValidator";
 
-export class OrderService implements OrderServicePort {
+export class OrderService {
   constructor(private readonly orderRepo: OrderRepositoryPort) {}
 
   async getHeader(orderId: string): Promise<Order> {
