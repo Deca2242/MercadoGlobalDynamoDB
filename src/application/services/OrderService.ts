@@ -2,15 +2,8 @@ import { Order } from "../../domain/entities/Order";
 import { OrderItem } from "../../domain/entities/OrderItem";
 import { NotFoundError } from "../../shared/AppError";
 import { validate } from "../../shared/validation";
-import {
-  OrderRepositoryPort,
-  OrderDetail,
-  CreateOrderInput,
-} from "../../domain/ports/OrderRepositoryPort";
-import {
-  CreateOrderInputSchema,
-  UpdateStatusSchema,
-} from "../validators/OrderValidator";
+import { OrderRepositoryPort, OrderDetail, CreateOrderInput } from "../../domain/ports/OrderRepositoryPort";
+import { CreateOrderInputSchema, UpdateStatusSchema } from "../validators/OrderValidator";
 
 export class OrderService {
   constructor(private readonly orderRepo: OrderRepositoryPort) {}
