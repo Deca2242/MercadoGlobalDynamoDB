@@ -3,18 +3,10 @@ import { User } from "../../domain/entities/User";
 import { Address } from "../../domain/entities/Address";
 import { Payment } from "../../domain/entities/Payment";
 import { Order } from "../../domain/entities/Order";
-import {
-  UserRepositoryPort,
-  UserDashboard,
-} from "../../domain/ports/UserRepositoryPort";
+import { UserRepositoryPort, UserDashboard } from "../../domain/ports/UserRepositoryPort";
 import { NotFoundError } from "../../shared/AppError";
 import { validate } from "../../shared/validation";
-import {
-  CreateProfileSchema,
-  AddAddressSchema,
-  AddPaymentSchema,
-  FilterOrdersSchema,
-} from "../validators/UserValidator";
+import { CreateProfileSchema, AddAddressSchema, AddPaymentSchema, FilterOrdersSchema } from "../validators/UserValidator";
 
 export class UserService {
   constructor(private readonly userRepo: UserRepositoryPort) {}
@@ -25,10 +17,7 @@ export class UserService {
     return user;
   }
 
-  async createProfile(
-    name: string,
-    email: string,
-  ): Promise<string> {
+  async createProfile( name: string, email: string): Promise<string> {
     validate(CreateProfileSchema, { name, email });
 
     const userId = uuidv4();
