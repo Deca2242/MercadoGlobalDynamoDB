@@ -11,4 +11,8 @@ export const environment = {
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "fakeSecretAccessKey",
   },
   tableName: process.env.TABLE_NAME || "MercadoGlobal",
+  cache: {
+    ttlSeconds: parseInt(process.env.CACHE_TTL_SECONDS || "300", 10),
+    enabled: process.env.CACHE_ENABLED !== "false",
+  },
 };

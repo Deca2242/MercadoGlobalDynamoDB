@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { environment } from "./infrastructure/config/environment";
-import { userController, orderController } from "./container";
+import { userController, orderController, cacheAdapter } from "./container";
 import { createUserRoutes } from "./infrastructure/http/routes/userRoutes";
 import { createOrderRoutes } from "./infrastructure/http/routes/orderRoutes";
 import { errorHandler } from "./infrastructure/http/middlewares/errorHandler";
@@ -24,6 +24,15 @@ app.get("/api-docs.json", (req, res) => {
 
 app.use("/api/users", createUserRoutes(userController));
 app.use("/api/orders", createOrderRoutes(orderController));
+
+// Cache — Endpoint de diagnóstico
+app.get("/api/cache/stats", (_req, res) => {
+  res.json({
+    enabled: environment.cache.enabled,
+    ttlSeconds: environment.cache.ttlSeconds,
+    ...cacheAdapter.getStats(),
+  });
+});
 
 app.use(errorHandler);
 
