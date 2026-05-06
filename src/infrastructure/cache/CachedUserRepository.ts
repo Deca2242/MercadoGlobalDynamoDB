@@ -8,22 +8,12 @@ import { Address } from "../../domain/entities/Address";
 import { Payment } from "../../domain/entities/Payment";
 import { Order } from "../../domain/entities/Order";
 
-/**
- * Decorador Cache-Aside para UserRepositoryPort.
- *
- * Envuelve un repositorio real (e.g. DynamoDB) y antepone una capa
- * de caché.  Las LECTURAS buscan primero en caché; las ESCRITURAS
- * van directo al repositorio e invalidan las claves afectadas.
- */
+
 export class CachedUserRepository implements UserRepositoryPort {
   constructor(
     private readonly delegate: UserRepositoryPort,
     private readonly cache: CachePort,
   ) {}
-
-  /* ------------------------------------------------------------------ */
-  /*  Helpers para construir claves de caché                            */
-  /* ------------------------------------------------------------------ */
 
   private profileKey(userId: string): string {
     return `user:profile:${userId}`;
@@ -43,11 +33,7 @@ export class CachedUserRepository implements UserRepositoryPort {
   private dashboardKey(userId: string): string {
     return `user:dashboard:${userId}`;
   }
-
-  /* ------------------------------------------------------------------ */
-  /*  LECTURAS — Cache-Aside (Lazy Loading)                             */
-  /* ------------------------------------------------------------------ */
-
+  
   async findProfile(userId: string): Promise<User | null> {
     const key = this.profileKey(userId);
     const cached = this.cache.get<User | null>(key);
@@ -110,10 +96,6 @@ export class CachedUserRepository implements UserRepositoryPort {
     this.cache.set(key, result);
     return result;
   }
-
-  /* ------------------------------------------------------------------ */
-  /*  ESCRITURAS — Delegate + Invalidación                              */
-  /* ------------------------------------------------------------------ */
 
   async createProfile(user: User): Promise<void> {
     await this.delegate.createProfile(user);

@@ -7,22 +7,12 @@ import { CachePort } from "../../domain/ports/CachePort";
 import { Order } from "../../domain/entities/Order";
 import { OrderItem } from "../../domain/entities/OrderItem";
 
-/**
- * Decorador Cache-Aside para OrderRepositoryPort.
- *
- * Envuelve un repositorio real (e.g. DynamoDB) y antepone una capa
- * de caché.  Las LECTURAS buscan primero en caché; las ESCRITURAS
- * van directo al repositorio e invalidan las claves afectadas.
- */
+
 export class CachedOrderRepository implements OrderRepositoryPort {
   constructor(
     private readonly delegate: OrderRepositoryPort,
     private readonly cache: CachePort,
   ) {}
-
-  /* ------------------------------------------------------------------ */
-  /*  Helpers para construir claves de caché                            */
-  /* ------------------------------------------------------------------ */
 
   private headerKey(orderId: string): string {
     return `order:header:${orderId}`;
@@ -33,10 +23,6 @@ export class CachedOrderRepository implements OrderRepositoryPort {
   private detailKey(orderId: string): string {
     return `order:detail:${orderId}`;
   }
-
-  /* ------------------------------------------------------------------ */
-  /*  LECTURAS — Cache-Aside (Lazy Loading)                             */
-  /* ------------------------------------------------------------------ */
 
   async getHeader(orderId: string): Promise<Order | null> {
     const key = this.headerKey(orderId);
@@ -68,9 +54,7 @@ export class CachedOrderRepository implements OrderRepositoryPort {
     return result;
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  ESCRITURAS — Delegate + Invalidación                              */
-  /* ------------------------------------------------------------------ */
+
 
   async createOrder(input: CreateOrderInput): Promise<void> {
     await this.delegate.createOrder(input);
