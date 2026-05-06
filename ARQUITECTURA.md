@@ -258,6 +258,10 @@ src/
 │   │   └── mappers/
 │   │       ├── UserMapper.ts
 │   │       └── OrderMapper.ts
+│   ├── cache/                  ← Cache-Aside (Decorator)
+│   │   ├── InMemoryCacheAdapter.ts
+│   │   ├── CachedUserRepository.ts
+│   │   └── CachedOrderRepository.ts
 │   └── config/
 │       └── environment.ts
 │
@@ -322,3 +326,102 @@ src/
 - **DeleteCommand**: Elimina un item por PK + SK.
 - **UpdateCommand**: Modifica atributos puntuales sin reemplazar todo el item.
 - **TransactWriteCommand**: Escribe multiples items de forma atomica (todo o nada).
+
+---
+
+## Patron Cache-Aside (Lazy Loading)
+
+El patron **Cache-Aside** coloca una capa de cache entre los servicios y los
+repositorios DynamoDB.  Se implementa usando el **patron Decorator**: los
+repositorios cacheados (`CachedUserRepository`, `CachedOrderRepository`)
+implementan la misma interfaz que los repositorios DynamoDB y los envuelven
+sin modificarlos.
+
+### Como funciona
+
+**Lectura:**
+
+```
+Service → CachedRepository → ¿En cache?
+                                 │
+                         SI ◄────┤────► NO
+                         │               │
+                   Retorna dato    DynamoDB.get()
+                                         │
+                                   Guardar en cache
+                                         │
+                                   Retorna dato
+```
+
+**Escritura:**
+
+```
+Service → CachedRepository → DynamoDB.put/delete()
+                                    │
+                              Invalidar cache
+                              (borrar claves afectadas)
+```
+
+### Arquitectura Hexagonal y Cache
+
+```
+Domain Layer:     CachePort (interfaz)          ← No conoce node-cache
+Infrastructure:   InMemoryCacheAdapter          ← Implementa CachePort con node-cache
+                  CachedUserRepository          ← Decorator sobre UserRepositoryPort
+                  CachedOrderRepository         ← Decorator sobre OrderRepositoryPort
+container.ts:     Conecta todo via inyeccion    ← Unico lugar que decide si usar cache
+```
+
+Si se quisiera cambiar de `node-cache` (en memoria) a Redis (distribuido),
+solo se crearia un `RedisCacheAdapter` que implemente `CachePort` y se
+cambiaria en `container.ts`.  Ningun otro archivo se toca.
+
+### Estrategia de Claves de Cache
+
+| Clave                                    | Datos que almacena                    |
+|------------------------------------------|---------------------------------------|
+| `user:profile:{userId}`                  | Perfil del usuario                    |
+| `user:addresses:{userId}`                | Lista de direcciones                  |
+| `user:payments:{userId}`                 | Lista de metodos de pago              |
+| `user:orders:{userId}`                   | Lista de pedidos del usuario          |
+| `user:orders:{userId}:status:{status}`   | Pedidos filtrados por estado          |
+| `user:dashboard:{userId}`                | Dashboard completo del usuario        |
+| `order:header:{orderId}`                 | Encabezado de un pedido               |
+| `order:items:{orderId}`                  | Items de un pedido                    |
+| `order:detail:{orderId}`                 | Detalle completo (header + items)     |
+
+### Invalidacion
+
+Cada operacion de escritura invalida (borra) las claves de cache que
+podrian contener datos stale:
+
+| Operacion de escritura       | Claves invalidadas                                    |
+|------------------------------|-------------------------------------------------------|
+| `createProfile`              | `user:profile:*`, `user:dashboard:*`                  |
+| `addAddress` / `deleteAddress` | `user:addresses:*`, `user:dashboard:*`              |
+| `addPayment` / `deletePayment` | `user:payments:*`, `user:dashboard:*`              |
+| `createOrder`                | `user:orders:*`, `user:dashboard:*`                   |
+| `updateStatus`               | `order:header:*`, `order:detail:*`, `user:orders:*`, `user:dashboard:*` |
+
+### Configuracion
+
+| Variable de entorno   | Valor por defecto | Descripcion                            |
+|-----------------------|-------------------|----------------------------------------|
+| `CACHE_TTL_SECONDS`   | `300` (5 min)     | Tiempo de vida de cada entrada         |
+| `CACHE_ENABLED`       | `true`            | `false` desactiva el cache totalmente  |
+
+### Endpoint de Diagnostico
+
+`GET /api/cache/stats` retorna estadisticas del cache en tiempo real:
+
+```json
+{
+  "enabled": true,
+  "ttlSeconds": 300,
+  "hits": 42,
+  "misses": 7,
+  "keys": 5,
+  "ksize": 120,
+  "vsize": 2048
+}
+```

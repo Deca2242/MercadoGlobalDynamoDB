@@ -58,7 +58,8 @@ Los prefijos en la Partition Key (PK) y Sort Key (SK) identifican el tipo de ent
 
 **Base de Datos:**
 - [AWS SDK v3 para DynamoDB](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-dynamodb/) (`@aws-sdk/client-dynamodb`, `@aws-sdk/lib-dynamodb`)
-- DynamoDB Local (para desarrollo)
+- [LocalStack](https://localstack.cloud/) + [CDK Local](https://github.com/localstack/aws-cdk-local) (para desarrollo)
+- Redis como caché distribuida
 
 **Utilidades:**
 - **Zod:** Validación estricta de esquemas de datos.
@@ -74,33 +75,51 @@ Los prefijos en la Partition Key (PK) y Sort Key (SK) identifican el tipo de ent
 
 ### 1. Prerrequisitos
 - Node.js (v18 o superior)
-- Docker (para correr DynamoDB de forma local)
+- Docker (para correr LocalStack y Redis)
 
 ### 2. Instalación de dependencias
 Clona el repositorio e instala los paquetes de NPM:
 ```bash
 npm install
+cd infra && npm install && cd ..
 ```
 
 ### 3. Configuración de Variables de Entorno
-Asegúrate de tener un archivo `.env` en la raíz del proyecto. Puedes basarte en el siguiente ejemplo:
-```env
-PORT=3000
-DYNAMO_ENDPOINT=http://localhost:8000
-DYNAMO_REGION=us-east-1
-TABLE_NAME=MercadoGlobal
-AWS_ACCESS_KEY_ID=fakeMyKeyId
-AWS_SECRET_ACCESS_KEY=fakeSecretAccessKey
-```
-
-### 4. Iniciar DynamoDB Local
-Si tienes Docker instalado, puedes levantar una instancia local de DynamoDB ejecutando:
+Copia el archivo de ejemplo y ajusta los valores si es necesario:
 ```bash
-docker run -p 8000:8000 amazon/dynamodb-local
+cp .env.example .env
 ```
-*(Nota: Necesitarás crear la tabla `MercadoGlobal` con sus respectivas llaves en tu instancia local antes de operar).*
 
-### 5. Levantar el Servidor
+### 4. Iniciar LocalStack y Redis
+```bash
+docker compose up -d
+```
+
+Esto levanta:
+- **LocalStack** (`localhost:4566`) — emula DynamoDB + CloudFormation
+- **Redis** (`localhost:6379`) — caché distribuida
+
+### 5. Crear la tabla DynamoDB con CDK Local
+Bootstrap y deploy del ministack CDK contra LocalStack:
+```bash
+npm run cdk:bootstrap
+npm run cdk:deploy
+```
+
+Esto crea la tabla `MercadoGlobal` con el GSI `GSI1-UserStatus-Date`.
+
+### 6. Cargar datos de ejemplo
+```bash
+npm run seed
+```
+
+Para verificar la tabla local:
+```bash
+aws dynamodb list-tables --endpoint-url http://localhost:4566
+aws dynamodb scan --table-name MercadoGlobal --select COUNT --endpoint-url http://localhost:4566
+```
+
+### 7. Levantar el Servidor
 Para iniciar el entorno de desarrollo con recarga automática:
 ```bash
 npm run dev

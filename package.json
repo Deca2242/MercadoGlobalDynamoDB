@@ -6,7 +6,12 @@
   "scripts": {
     "dev": "nodemon --exec ts-node src/app.ts",
     "build": "tsc",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "cdk:bootstrap": "cd infra && npx cdklocal bootstrap",
+    "cdk:deploy": "cd infra && npx cdklocal deploy --require-approval never",
+    "cdk:destroy": "cd infra && npx cdklocal destroy --force",
+    "cdk:synth": "cd infra && npx cdklocal synth",
+    "seed": "sh scripts/dynamodb/seed-local.sh"
   },
   "keywords": [],
   "author": "",
@@ -17,8 +22,9 @@
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "redis": "^5.12.1",
     "swagger-ui-express": "^5.0.1",
-    "uuid": "^13.0.0",
+    "uuid": "^14.0.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
