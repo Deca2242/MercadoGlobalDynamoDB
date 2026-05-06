@@ -53,7 +53,7 @@ aws dynamodb put-item \
   --item '{
     "PK":    {"S": "USER#luisa"},
     "SK":    {"S": "PAYMENT#pay1"},
-    "type":  {"S": "Visa"},
+    "type":  {"S": "credit"},
     "last4": {"S": "1234"}
   }' \
   --endpoint-url "${DYNAMO_ENDPOINT}" >/dev/null
@@ -63,7 +63,7 @@ aws dynamodb put-item \
   --item '{
     "PK":   {"S": "USER#luisa"},
     "SK":   {"S": "PAYMENT#pay2"},
-    "type": {"S": "PayPal"}
+    "type": {"S": "paypal"}
   }' \
   --endpoint-url "${DYNAMO_ENDPOINT}" >/dev/null
 
@@ -75,10 +75,10 @@ aws dynamodb put-item \
     "PK":              {"S": "USER#luisa"},
     "SK":              {"S": "ORDER#2023-10-27T08:00Z#ORD555"},
     "orderId":         {"S": "ORD555"},
-    "status":          {"S": "Pago exitoso"},
+    "status":          {"S": "delivered"},
     "total":           {"N": "1250"},
     "shippingAddress": {"S": "Calle 10 Bogotá"},
-    "GSI1PK":          {"S": "USER#luisa#STATUS#Pago exitoso"},
+    "GSI1PK":          {"S": "USER#luisa#STATUS#delivered"},
     "GSI1SK":          {"S": "2023-10-27T08:00Z"}
   }' \
   --endpoint-url "${DYNAMO_ENDPOINT}" >/dev/null
@@ -89,10 +89,10 @@ aws dynamodb put-item \
     "PK":              {"S": "USER#luisa"},
     "SK":              {"S": "ORDER#2023-11-01T09:15Z#ORD600"},
     "orderId":         {"S": "ORD600"},
-    "status":          {"S": "Enviado"},
+    "status":          {"S": "shipped"},
     "total":           {"N": "300"},
     "shippingAddress": {"S": "Calle 10 Bogotá"},
-    "GSI1PK":          {"S": "USER#luisa#STATUS#Enviado"},
+    "GSI1PK":          {"S": "USER#luisa#STATUS#shipped"},
     "GSI1SK":          {"S": "2023-11-01T09:15Z"}
   }' \
   --endpoint-url "${DYNAMO_ENDPOINT}" >/dev/null
@@ -105,7 +105,7 @@ aws dynamodb put-item \
     "PK":              {"S": "ORDER#ORD555"},
     "SK":              {"S": "#METADATA"},
     "userId":          {"S": "USER#luisa"},
-    "status":          {"S": "Pago exitoso"},
+    "status":          {"S": "delivered"},
     "total":           {"N": "1250"},
     "date":            {"S": "2023-10-27"},
     "shippingAddress": {"S": "Calle 10 Bogotá"}
