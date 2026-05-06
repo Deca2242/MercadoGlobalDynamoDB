@@ -2,7 +2,13 @@ import express from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { environment } from "./infrastructure/config/environment";
-import { userController, orderController, cacheAdapter } from "./container";
+import {
+  userController,
+  orderController,
+  cacheAdapter,
+  connectCache,
+  disconnectCache,
+} from "./container";
 import { createUserRoutes } from "./infrastructure/http/routes/userRoutes";
 import { createOrderRoutes } from "./infrastructure/http/routes/orderRoutes";
 import { errorHandler } from "./infrastructure/http/middlewares/errorHandler";
@@ -13,11 +19,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Swagger UI - Documentación de la API
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));
-
-// Endpoint para obtener el spec OpenAPI en formato JSON
-app.get("/api-docs.json", (req, res) => {
+app.get("/api-docs.json", (_req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.send(openApiSpec);
 });
@@ -25,10 +28,10 @@ app.get("/api-docs.json", (req, res) => {
 app.use("/api/users", createUserRoutes(userController));
 app.use("/api/orders", createOrderRoutes(orderController));
 
-// Cache — Endpoint de diagnóstico
 app.get("/api/cache/stats", (_req, res) => {
   res.json({
     enabled: environment.cache.enabled,
+    type: "redis",
     ttlSeconds: environment.cache.ttlSeconds,
     ...cacheAdapter.getStats(),
   });
@@ -36,6 +39,23 @@ app.get("/api/cache/stats", (_req, res) => {
 
 app.use(errorHandler);
 
-app.listen(environment.port, () => {
-  console.log(`Server running on port ${environment.port}`);
+async function shutdown(signal: string): Promise<void> {
+  console.log(`${signal} recibido — cerrando la aplicación...`);
+  await disconnectCache();
+  process.exit(0);
+}
+
+process.on("SIGTERM", () => void shutdown("SIGTERM"));
+process.on("SIGINT", () => void shutdown("SIGINT"));
+
+async function main(): Promise<void> {
+  await connectCache();
+  app.listen(environment.port, () => {
+    console.log(`Servidor iniciado en el puerto ${environment.port}`);
+  });
+}
+
+main().catch((error) => {
+  console.error("Error fatal al iniciar la aplicación:", error);
+  process.exit(1);
 });
