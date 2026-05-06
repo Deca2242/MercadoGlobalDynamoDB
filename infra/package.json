@@ -1,0 +1,21 @@
+{
+  "name": "mercado-global-infra",
+  "version": "1.0.0",
+  "description": "CDK Local — MiniStack para MercadoGlobal (DynamoDB)",
+  "scripts": {
+    "build": "tsc",
+    "synth": "npx cdklocal synth",
+    "bootstrap": "npx cdklocal bootstrap",
+    "deploy": "npx cdklocal deploy --require-approval never",
+    "destroy": "npx cdklocal destroy --force"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.178.2",
+    "constructs": "^10.4.2"
+  },
+  "devDependencies": {
+    "aws-cdk": "^2.178.2",
+    "aws-cdk-local": "^2.0.0",
+    "typescript": "^5.8.0"
+  }
+}
